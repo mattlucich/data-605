@@ -1,0 +1,117 @@
+---
+title: "Data 605 HW 1"
+author: "Matthew Lucich"
+date: "1/8/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r libraries, include=FALSE}
+library(gifski)
+```
+
+
+### Build the first letters for both your first and last name using point plots in R.
+
+```{r ml}
+
+# ML
+x <- c(rep(-1.5,500),
+       seq(-0.75,-1.5,length.out=500), 
+       seq(-0.75,0,length.out=500), 
+       rep(1,500), 
+       seq(2,1,length.out=500), 
+       rep(0,500))
+y <- c(seq(-2,1,length.out=500), 
+       seq(-2,1,length.out=500), 
+       seq(-2,1,length.out=500), 
+       seq(-2,1,length.out=500), 
+       rep(-2,500),
+       seq(-2,1,length.out=500))
+z=rbind(x,y)
+plot(y~x, xlim=c(-3,3), ylim=c(-3,3))
+
+```
+
+### Then, write R code that will left multiply (%>%) a square matrix (x) against each of the vectors of points (y). Initially, that square matrix will be the Identity matrix.  
+
+### Use a loop that changes the transformation matrix incrementally to demonstrate 1) shear, 2) scaling, 3)  rotation , and 4) projection in animated fashion. 
+
+
+# 1) Shear
+
+```{r, animation.hook="gifski"}
+
+# Loop between zero and one in .2 increments (initialized with identity matrix)
+for (val in c(1.0,0.8,0.6,0.4,0.2,0.0,0.2,0.4,0.6,0.8)) {
+  # Update transformation matrix with for loop value
+  trans_matrix <- matrix(c(1, 0, val, 1), nrow=2, ncol=2)
+  # Transform each column in z
+  tm <- apply(z, 2, function(x) x %*% trans_matrix)
+  # Plot transformed matrix
+  plot(tm[2,] ~ tm[1,], xlim=c(-3, 3), ylim=c(-3, 3))
+}
+
+```
+
+
+# 2) Scaling
+
+```{r, animation.hook="gifski"}
+
+for (val in c(1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.25,2.0,1.75,1.5,1.25,1.0,0.75,0.5,0.75)) {
+  trans_matrix <- matrix(c(val, 0, 0, val), nrow=2, ncol=2)
+  tm <- apply(z, 2, function(x) x %*% trans_matrix)
+  plot(tm[2,] ~ tm[1,], xlim=c(-3,3), ylim=c(-3,3))
+}
+
+```
+
+# 3) Rotation
+
+```{r, animation.hook="gifski"}
+
+for (val in seq(1,10,.25)) {
+  # Extend z with an additional row of zeros
+  ext_z <- rbind(z, numeric(3000))
+  trans_matrix <- matrix(c(cos(val), sin(val), 0, -sin(val), cos(val), 0, 0, 0, 1), nrow=3, ncol=3)
+  tm <- apply(ext_z, 2, function(x) x %*% trans_matrix)
+  plot(tm[2,] ~ tm[1,], xlim=c(-3,3), ylim=c(-3,3))
+}
+
+```
+
+
+
+# 4) Projection
+
+```{r, animation.hook="gifski"}
+
+for (val in c(1.00,0.75,0.50,0.25,0.00,-0.25,-0.50,-0.75,-1.00,-0.75,-0.50,-0.25,0.00,0.25,0.50,0.75)) {
+  ext_z <- rbind(z, numeric(3000))
+  trans_matrix <- matrix(c(val,0,0,0,1,0,0,0,1), nrow=3, ncol=3)
+  tm <- apply(ext_z, 2, function(x) x %*% trans_matrix)
+  plot(tm[2,] ~ tm[1,], xlim=c(-3,3), ylim=c(-3,3))
+}
+
+```
+
+
+# References
+
+[How to resize, translate, flip and rotate an image with OpenCV?](https://datahacker.rs/003-how-to-resize-translate-flip-and-rotate-an-image-with-opencv/#flip-an-image)
+
+[Create an animation from multiple R plots](https://bookdown.org/yihui/rmarkdown-cookbook/animation.html)
+
+[Shears and one directional scaling](https://www.maa.org/external_archive/joma/Volume8/Kalman/Linear3.html)
+
+
+
+
+
+
+

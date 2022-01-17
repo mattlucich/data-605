@@ -1,0 +1,195 @@
+---
+title: "Data 602 HW 2"
+author: "Matthew Lucich"
+date: "1/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(matrixcalc)
+```
+
+## Show that $A^TA \neq  AA^T$ in general. (Proof and demonstration.)
+
+### Proof
+
+$A^TA \neq  AA^T$ can be proved generally with one counterexample. Yet let's explore the generalized form in order to gain an intuition for why $A^TA =  AA^T$ will only be true in special circumstances.
+
+Let's define matrix A and its transpose:
+
+$A = \begin{bmatrix}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}\\
+a_{31} & a_{32} & a_{33} & a_{34}
+\end{bmatrix}$
+
+$A^T = \begin{bmatrix}
+a_{11} & a_{21} & a_{31}\\
+a_{12} & a_{22} & a_{32}\\
+a_{13} & a_{23} & a_{33}\\
+a_{14} & a_{24} & a_{34}
+\end{bmatrix}$
+
+
+Then see that the general form of $A^TA$:
+
+$\begin{bmatrix}
+a_{11} & a_{21} & a_{31}\\
+a_{12} & a_{22} & a_{32}\\
+a_{13} & a_{23} & a_{33}\\
+a_{14} & a_{24} & a_{34}
+\end{bmatrix}\begin{bmatrix}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}\\
+a_{31} & a_{32} & a_{33} & a_{34}
+\end{bmatrix}$
+
+will result in:
+
+$\begin{bmatrix}
+(a_{11} a_{11} + a_{21}a_{21} + a_{31} a_{31}) & (a_{11} a_{12} + a_{21}a_{22} + a_{31} a_{32}) & (a_{11} a_{13} + a_{21} a_{23} + a_{31} a_{33}) & (a_{11} a_{14} + a_{21} a_{24} + a_{31} a_{34}) \\
+(a_{12} a_{11} + a_{22}a_{21} + a_{32} a_{31}) & (a_{12} a_{12} + a_{22}a_{22} + a_{32} a_{32}) & (a_{12} a_{13} + a_{22} a_{23} + a_{32} a_{33}) & (a_{12} a_{14} + a_{22} a_{24} + a_{32} a_{34})\\
+(a_{13} a_{11} + a_{23}a_{21} + a_{33} a_{31}) & (a_{13} a_{12} + a_{23}a_{22} + a_{33} a_{32}) & (a_{13} a_{13} + a_{23} a_{23} + a_{33} a_{33}) & (a_{13} a_{14} + a_{23} a_{24} + a_{33} a_{34})\\
+(a_{14} a_{11} + a_{24}a_{21} + a_{34} a_{31}) & (a_{14} a_{12} + a_{24}a_{22} + a_{34} a_{32}) & (a_{14} a_{13} + a_{24} a_{23} + a_{34} a_{33}) & (a_{14} a_{14} + a_{24} a_{24} + a_{34} a_{34})
+\end{bmatrix}$
+
+
+Now let's look at $AA^T$
+
+$\begin{bmatrix}
+a_{11} & a_{21} & a_{31}\\
+a_{12} & a_{22} & a_{32}\\
+a_{13} & a_{23} & a_{33}\\
+a_{14} & a_{24} & a_{34}
+\end{bmatrix} \begin{bmatrix}
+a_{11} & a_{12} & a_{13} & a_{14}\\
+a_{21} & a_{22} & a_{23} & a_{24}\\
+a_{31} & a_{32} & a_{33} & a_{34}
+\end{bmatrix}$
+
+which results in:
+
+$\begin{bmatrix}
+(a_{11} a_{11} + a_{12}a_{12} + a_{13} a_{13} + a_{14} a_{14}) & 
+(a_{11} a_{21} + a_{12}a_{22} + a_{13} a_{23} + a_{14} a_{24}) & 
+(a_{11} a_{31} + a_{12} a_{32} + a_{13} a_{33} + a_{14} a_{34}) \\
+(a_{21} a_{11} + a_{22} a_{12} + a_{23} a_{13} + a_{24} a_{14}) & 
+(a_{21} a_{21} + a_{22} a_{22} + a_{23} a_{23} + a_{24} a_{24}) & 
+(a_{21} a_{31} + a_{22} a_{32} + a_{23} a_{33} + a_{24} a_{34}) \\
+(a_{31} a_{11} + a_{32} a_{12} + a_{33} a_{13} + a_{34} a_{14}) & 
+(a_{31} a_{21} + a_{32} a_{22} + a_{33} a_{23} + a_{34} a_{24}) & 
+(a_{31} a_{31} + a_{32} a_{32} + a_{33} a_{33} + a_{34} a_{34})
+\end{bmatrix}$
+
+
+We can see the two results are not equivalent.
+
+
+### Demonstration
+
+Let's clarify this with an example.
+
+```{r}
+# Define matrix A
+A <- matrix(c(1:12), nrow=3, ncol=4)
+
+# Generate transpose of A
+At <- t(A)
+
+A
+
+At
+
+At %*% A
+
+A %*% At
+
+```
+
+
+## For a special type of square matrix A, we get $A^TA =  AA^T$. Under what conditions could this be true?
+
+Since we know matrix multiplication is not commutative (Beezer, page 180), in order for the equality above to be true A must equal $A^T$. When this occurs, A is known as a symmetric matrix. Additionally, it is worth noting that since the transpose of an m × n matrix A is the matrix n × m, in order for a matrix to symmetric it must be a square matrix (Beezer, page 166). An example is demonstrated below.
+
+
+```{r}
+# Define symmetric matrix A
+A <- matrix(c(1, 1, -1, 1, 2, 0, -1, 0, 5), nrow=3, ncol=3)
+
+# Generate transpose of A
+At <- t(A)
+
+A
+
+At
+
+A == At
+
+res_1 <- At %*% A
+
+res_2 <- A %*% At
+
+res_1 == res_2
+
+```
+
+ 
+## Write an R function to factorize a square matrix A into LU or LDU, whichever you prefer.
+
+A known limitation of this LU factorization algorithm is its instability handling zero pivots.
+
+```{r}
+
+# Define matrix A
+A <- matrix(c(1, 2, 4, 1, 3,6,1,5,8), nrow=3, ncol=3)
+
+A
+
+# LU factorization algorithm
+lu.decomposition.new <- function(A)
+{
+    m <- nrow(A)
+    L <- diag(m)
+    U <- A
+    
+    for (k in 1:m-1) {
+      for (j in k+1:m) {
+        if (j < m+1 & k > 0) {
+          L[j,k] <- U[j,k]/U[k,k] 
+          U[j,k:m] <- U[j,k:m] - L[j,k] * U[k,k:m] 
+        }
+      }
+    }
+    result <- list(L=L, U=U)
+    return(result)
+}
+
+# Find LU matrices
+lu.decomposition.new(A)
+
+# Compare with function from R package matrixcalc
+lu.decomposition(A)
+
+```
+
+
+# References
+
+Beezer, Subsection TSM Transposes and Symmetric Matrices, A First Course in Linear Algebra, page 166
+
+Beezer, Subsection MM Matrix Multiplication, A First Course in Linear Algebra, page 180
+
+[Gaussian Elimination and LU Factorization](http://www.math.iit.edu/~fass/477577_Chapter_7.pdf)
+
+[lu.decomposition: LU Decomposition of Square Matrix](https://www.rdocumentation.org/packages/matrixcalc/versions/1.0-5/topics/lu.decomposition)
+
+[LU Decomposition - Shortcut Method](https://www.youtube.com/watch?v=UlWcofkUDDU)
+
+[What Is Symmetric Matrix And Skew Symmetric Matrix](https://byjus.com/maths/what-is-symmetric-matrix-and-skew-symmetric-matrix/)
+
+[When is matrix multiplication commutative?](https://math.stackexchange.com/questions/170241/when-is-matrix-multiplication-commutative)
+
