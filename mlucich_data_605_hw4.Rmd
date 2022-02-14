@@ -1,0 +1,148 @@
+---
+title: "Data 605 HW4"
+author: "Matthew Lucich"
+date: "2/12/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## With the attached data file, build and visualize eigenimagery that accounts for 80% of the variability.  Provide full R code and discussion.
+
+```{r, warning=FALSE}
+library(jpeg)
+library(OpenImageR)
+```
+
+
+## Load Images
+
+In order to replicate, place the jpg folder of images within your working directory. First, a list of all image files is created. Then, one image is loaded (via the jpeg library) in order to obtain the dimensions of the images, which are 1200 x 2500 x 3. Finally, a 17 by 9,000,000 matrix is created, with 17 representing the number of images and 9,000,000 being the product of the dimensions of the images.
+
+```{r}
+
+# Path of images
+path = file.path(getwd(), 'jpg/')
+# List all images
+images <- list.files(path = path, pattern = "jpg")
+# Load first image (to inform the dimensions)
+image <- readJPEG(paste0(path, images[1]))
+# Create 17 (number of images) by 9,000,000 (product of dimensions of images) matrix
+data <- matrix(0, length(images), prod(dim(image)))
+
+```
+
+
+## Convert to vectors
+
+Here all images are looped through and converted to vectors of R, G, B components, then the transpose is taken so the result is a 9,000,000 rows and 17 columns matrix.
+
+```{r}
+
+# Loop through images and convert to R, B, G vectors
+for (i in 1:length(images)) {
+  im <- readJPEG(paste0(path, images[i]))
+  r  <- as.vector(im[,,1])
+  g  <- as.vector(im[,,2])
+  b  <- as.vector(im[,,3])
+  # Concat and take transpose
+  data[i,] <- t(c(r, g, b))
+}
+
+df_sneakers <- as.data.frame(t(data))
+
+```
+
+
+
+## Center and scale
+
+Center the data by subtracting the mean. Scale the data by dividing by the standard deviation.
+
+```{r}
+
+scaled_sneakers <- scale(df_sneakers, center = TRUE, scale = FALSE)
+
+```
+
+
+## Compute covariance matrix
+
+```{r}
+
+sigma <- cov(scaled_sneakers)
+
+```
+
+
+## Compute eigenvectors and eigenvalues of covariance matrix
+
+After calculating the eigenvalues and eigenvectors, the cumulative variance for the number of components included is reviewed. The results show that including the top 2 components will give us an image that accounts for ~81% of the variability.
+
+```{r}
+
+# Calculate eigenvalues and eigenvectors
+eig <- eigen(sigma)
+# Cumulative variance for the number of components
+cum_var <- cumsum(eig$values) / sum(eig$values)
+# Number of components to include in eigenimage for 81% variability
+num_comp <- 2
+
+cum_var
+
+```
+
+
+## Visualize the proportion of variance that is captured in the first 17 components
+
+Again, it can be seen that including only the top two most informative components will allow us to generate an image accounting for over 80% of the variability. Only 10 components are needed to obtain an image that accounts for 95% of the variability, demonstrating the magnitude of this dimensionality reduction technique.
+
+```{r}
+
+plot(1:17, cum_var, xlab="Number of Components", ylab="Proportion of Variance")
+
+```
+
+
+## Compute eigenimages
+
+Per Diego Herrero, a scaling factor is created by generating a diagonal matrix from the eigenvalues of the top 2 components, raised to the -.5 power, divided by the square root of m (rows), minus 1. Then, multiply the centered data (scaled_sneakers) with the top 2 eigenvectors, then with the scaling factor. Lastly, convert into dimensions of original and select one image to display.
+
+```{r}
+
+# Compute scaling factor
+scaling_sneakers <- diag(eig$values[1:num_comp]^(-1/2)) / (sqrt(nrow(scaled_sneakers)-1))
+# Multiply centered matrix by top 2 components, then by scaling factor
+eigensneakers <- scaled_sneakers %*% eig$vectors[,1:num_comp] %*% scaling_sneakers
+# Convert to dimensions of original images, and select one image to display
+eigenimage <- array(eigensneakers[,2], dim(image))
+
+```
+
+
+## Display eigenimage
+
+Accounts for ~81% of the variability.
+
+```{r, echo=TRUE}
+
+imageShow(eigenimage)
+
+```
+
+
+## References
+
+[Face Recognition using Eigenfaces by Diego Herrero](https://rpubs.com/dherrero12/543854)
+
+[Simple Image Classifier with Eigenfaces](https://rpubs.com/JanpuHou/469414)
+
+[SVD and facial recognition (eigenfaces)](http://faculty.washington.edu/sbrunton/me565/pdf/L29secure.pdf)
+
+[Singular Value Decomposition YouTube Course](https://www.youtube.com/playlist?list=PLMrJAkhIeNNSVjnsviglFoY2nXildDCcv)
+
+
+
+
