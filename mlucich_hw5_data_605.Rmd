@@ -1,0 +1,217 @@
+---
+title: "Data 605 HW5"
+author: "Matthew Lucich"
+date: "2/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+#### 1. (Bayesian). A new test for multinucleoside-resistant (MNR) human immunodeficiency virus type 1 (HIV-1) variants was recently developed. The test maintains 96% sensitivity, meaning that, for those with the disease, it will correctly report “positive” for 96% of them. The test is also 98% specific, meaning that, for those without the disease, 98% will be correctly reported as “negative.” MNR HIV-1 is considered to be rare (albeit emerging), with about a .1% or .001 prevalence rate. Given the prevalence rate, sensitivity, and specificity estimates, what is the probability that an individual who is reported as positive by the new test actually has the disease? If the median cost (consider this the best point estimate) is about $100,000 per positive case total and the test itself costs $1000 per administration, what is the total first-year cost for treating 100,000 individuals?
+
+
+```{r}
+# What is the probability that an individual who is reported as positive by the new test actually has the disease? 
+```
+
+Per [Rey-Bellet](https://people.math.umass.edu/~lr7q/ps_files/teaching/math456/lecture14.pdf), Bayes formula for positive cases in the context of epidemiology.
+
+\begin{equation}
+\label{eq:bayes}
+P(D|+) = \frac{P(+|D) P(D)}
+{P(+|D) P(D) + P(+|\overline{D}) P(\overline{D})}
+\end{equation}
+
+```{r}
+bayes_perc <- (.96 * .001) / ((.96 * .001) + (.02 * .999))
+bayes_perc
+```
+
+```{r}
+
+# If the median cost (consider this the best point estimate) is about $100,000 per positive case total and the test itself costs $1000 per administration, what is the total first-year cost for treating 100,000 individuals?
+
+individuals <- 100000
+treat_cost <- 100000
+test_cost <- 1000
+preval <- .001
+false_pos_perc <- .02
+sensitivity <- .96
+
+indivd_test_pos <- (individuals * false_pos_perc) + (individuals * preval * sensitivity)
+
+(indivd_test_pos * treat_cost) + (test_cost * individuals)
+
+```
+
+
+
+#### 2. (Binomial). The probability of your organization receiving a Joint Commission inspection in any given month is .05. What is the probability that, after 24 months, you received exactly 2 inspections? What is the probability that, after 24 months, you received 2 or more inspections? What is the probability that your received fewer than 2 inspections? What is the expected number of inspections you should have received? What is the standard deviation?
+
+
+```{r}
+
+# What is the probability that, after 24 months, you received exactly 2 inspections?
+dbinom(2, size=24, prob=0.05) 
+
+# What is the probability that, after 24 months, you received 2 or more inspections? 
+pbinom(1, size=24, prob=0.05, lower.tail = FALSE) 
+
+# What is the probability that your received fewer than 2 inspections? 
+pbinom(1, size=24, prob=0.05) 
+
+# What is the expected number of inspections you should have received? 
+0.05 * 24
+
+# What is the standard deviation?
+sqrt(0.05 * 0.95 * 24)
+
+```
+
+
+
+#### 3. (Poisson). You are modeling the family practice clinic and notice that patients arrive at a rate of 10 per hour. What is the probability that exactly 3 arrive in one hour? What is the probability that more than 10 arrive in one hour? How many would you expect to arrive in 8 hours? What is the standard deviation of the appropriate probability distribution? If there are three family practice providers that can see 24 templated patients each day, what is the percent utilization and what are your recommendations?
+
+```{r}
+
+# What is the probability that exactly 3 arrive in one hour?
+dpois(3, lambda=10)
+
+# What is the probability that more than 10 arrive in one hour? 
+ppois(10, lambda=10, lower=FALSE)
+
+# How many would you expect to arrive in 8 hours? 
+10 * 8
+
+# What is the standard deviation of the appropriate probability distribution? 
+sqrt(10)
+
+# If there are three family practice providers that can see 24 templated patients each day, what is the percent utilization and what are your recommendations?
+util <- 80 / 72
+util*100
+
+```
+**Recommendation:** Extending hours by one hour for all practice providers seems like a good option considering the increased workload is manageable, would increase revenue, and it would leave no disappointed customers. The practice can also look for ways of improving patient-seeing inefficiencies in order to see 80 patients within 8 hours. Additionally, raising prices can be considered which would in theory increase profits while bringing demand inline with capacity.
+
+
+#### 4. (Hypergeometric). Your subordinate with 30 supervisors was recently accused of favoring nurses. 15 of the subordinate’s workers are nurses and 15 are other than nurses. As evidence of malfeasance, the accuser stated that there were 6 company-paid trips to Disney World for which everyone was eligible. The supervisor sent 5 nurses and 1 non-nurse. If your subordinate acted innocently, what was the probability he/she would have selected five nurses for the trips? How many nurses would we have expected your subordinate to send? How many non-nurses would we have expected your subordinate to send?
+
+```{r}
+
+# The supervisor sent 5 nurses and 1 non-nurse. If your subordinate acted innocently, what was the probability he/she would have selected five nurses for the trips
+dhyper(5, 15, 15, 6, 0.5)
+
+# How many nurses would we have expected your subordinate to send?
+6 * 0.5 # Six trips multiplied by probability
+
+# How many non-nurses would we have expected your subordinate to send?
+6 * 0.5 # Six trips multiplied by probability
+
+```
+
+
+#### 5. (Geometric). The probability of being seriously injured in a car crash in an unspecified location is about .1% per hour. A driver is required to traverse this area for 1200 hours in the course of a year. What is the probability that the driver will be seriously injured during the course of the year? In the course of 15 months? What is the expected number of hours that a driver will drive before being seriously injured? Given that a driver has driven 1200 hours, what is the probability that he or she will be injured in the next 100 hours? 
+
+```{r}
+
+# What is the probability that the driver will be seriously injured during the course of the year?
+pgeom(1200, .001)
+
+# In the course of 15 months? 
+pgeom(1500, .001)
+
+# What is the expected number of hours that a driver will drive before being seriously injured? 
+1/.001
+
+# Given that a driver has driven 1200 hours, what is the probability that he or she will be injured in the next 100 hours?
+sum(dgeom(c(1201:1300), .001))
+
+```
+
+
+#### 6. You are working in a hospital that is running off of a primary generator which fails about once in 1000 hours. What is the probability that the generator will fail more than twice in 1000 hours? What is the expected value?
+
+```{r}
+
+# What is the probability that the generator will fail more than twice in 1000 hours?
+pbinom(2, size=1000, prob=.001, lower.tail = FALSE) 
+
+# What is the expected value?
+(1 / 1000) * 1000 # Probability multiplied by trials
+
+```
+
+
+#### 7. A surgical patient arrives for surgery precisely at a given time. Based on previous analysis (or a lack of knowledge assumption), you know that the waiting time is uniformly distributed from 0 to 30 minutes. What is the probability that this patient will wait more than 10 minutes? If the patient has already waited 10 minutes, what is the probability that he/she will wait at least another 5 minutes prior to being seen? What is the expected waiting time?
+
+```{r}
+
+# What is the probability that this patient will wait more than 10 minutes?
+punif(10, min = 0, max = 30, lower.tail = FALSE)
+
+# If the patient has already waited 10 minutes, what is the probability that he/she will wait at least another 5 minutes prior to being seen? 
+punif(15, min = 10, max = 30, lower.tail = FALSE) 
+
+# What is the expected waiting time?
+30 * .5
+
+```
+
+
+#### 8. Your hospital owns an old MRI, which has a manufacturer’s lifetime of about 10 years (expected value). Based on previous studies, we know that the failure of most MRIs obeys an exponential distribution. What is the expected failure time? What is the standard deviation? What is the probability that your MRI will fail after 8 years? Now assume that you have owned the machine for 8 years. Given that you already owned the machine 8 years, what is the probability that it will fail in the next two years?
+
+
+```{r}
+
+# What is the expected failure time? 
+print("10 years")
+
+# What is the standard deviation? 
+print("Per Kissell & Poserina (2017), the standard deviation is always equal to the mean. Therefore, the standard deviation is 10 years")
+
+#  What is the probability that your MRI will fail after 8 years? 
+pexp(8, rate=1/10, lower.tail = FALSE)
+
+# Now assume that you have owned the machine for 8 years. Given that you already owned the machine 8 years, what is the probability that it will fail in the next two years?
+pexp(8, rate=1/10, lower.tail = FALSE) - pexp(10, rate=1/10, lower.tail = FALSE)
+
+```
+
+
+
+## References
+
+https://www.khanacademy.org/math/statistics-probability 
+
+http://www.r-tutor.com/elementary-statistics/probability-distributions/binomial-distribution 
+
+http://www.r-tutor.com/elementary-statistics/probability-distributions/poisson-distribution 
+
+https://r-coder.com/poisson-distribution-r/ 
+
+https://people.math.umass.edu/~lr7q/ps_files/teaching/math456/lecture14.pdf (Rey-Bellet)
+
+https://www.sciencedirect.com/topics/mathematics/poisson-distribution 
+
+https://www.nabinkm.com/2010/08/bayes-theorem-in-latex.html
+
+https://www.statology.org/dgeom-pgeom-qgeom-rgeom-r/
+
+https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Geometric.html 
+
+https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Uniform.html 
+
+https://opentextbc.ca/introstatopenstax/chapter/the-uniform-distribution/
+
+http://www.r-tutor.com/elementary-statistics/probability-distributions/exponential-distribution
+
+https://www.sciencedirect.com/topics/mathematics/exponential-distribution (Kissell & Poserina, 2017)
+
+https://stat.ethz.ch/R-manual/R-devel/library/stats/html/Exponential.html
+
+https://r-coder.com/exponential-distribution-r/
+
+
