@@ -1,0 +1,171 @@
+---
+title: "Data 605 HW 6"
+author: "Matthew Lucich"
+date: "3/4/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 1) A bag contains 5 green and 7 red jellybeans. How many ways can 5 jellybeans be withdrawn from the bag so that the number of green ones withdrawn will be less than 2?
+
+```{r}
+
+((choose(7, 4) * choose(5, 1)) + choose(7, 5))
+
+```
+
+**Solution**: 196
+
+
+### 2) A certain congressional committee consists of 14 senators and 13 representatives. How many ways can a subcommittee of 5 be formed if at least 4 of the members must be representatives?
+
+```{r}
+
+(choose(13, 4) * choose(14, 1)) + choose(13, 5)
+
+```
+
+**Solution**: 11,297
+
+
+### 3) If a coin is tossed 5 times, and then a standard six-sided die is rolled 2 times, and finally a group of three cards are drawn from a standard deck of 52 cards without replacement, how many different outcomes are possible?
+
+```{r}
+
+2^5 * 6^2 * (52*51*50)
+
+```
+
+**Solution**: 152,755,200
+
+
+### 4) 3 cards are drawn from a standard deck without replacement. What is the probability that at least one of the cards drawn is a 3? Express your answer as a fraction or a decimal number rounded to four decimal places.
+
+```{r}
+
+prob_3 <- dhyper(1, 4, 48, 3, (4/52)) + 
+          dhyper(2, 4, 48, 3, (4/52)) + 
+          dhyper(3, 4, 48, 3, (4/52))
+num_3 <- choose(52, 3) * prob_3
+
+print(prob_3)
+print(num_3)
+print(num_3 / choose(52, 3))
+
+```
+
+**Solution**: 0.2174
+
+
+### 5) Lorenzo is picking out some movies to rent, and he is primarily interested in documentaries and mysteries. He has narrowed down his selections to 17 documentaries and 14 mysteries.
+
+#### Step 1. How many different combinations of 5 movies can he rent?
+
+```{r}
+
+n <- 5
+k <- 31
+n_choose <- factorial(k) / (factorial(n) * (factorial(k-n)))
+n_choose
+
+```
+
+**Solution**: 169,911
+
+
+#### Step 2. How many different combinations of 5 movies can he rent if he wants at least one mystery?
+
+```{r}
+
+prob_mys <- 1 - dhyper(5, 17, 14, 5, (17/31))
+
+print(prob_mys)
+print(prob_mys * n_choose)
+
+```
+
+**Solution**: 163,723
+
+
+### 6) In choosing what music to play at a charity fund raising event, Cory needs to have an equal number of symphonies from Brahms, Haydn, and Mendelssohn. If he is setting up a schedule of the 9 symphonies to be played, and he has 4 Brahms, 104 Haydn, and 17 Mendelssohn symphonies from which to choose, how many different schedules are possible? Express your answer in scientific notation rounding to the hundredths place.
+
+```{r}
+
+choose(4, 3) * choose(104, 3) * choose(17, 3) * factorial(9)
+
+```
+
+**Solution**: 1.80e+14
+
+
+### 7) An English teacher needs to pick 13 books to put on his reading list for the next school year, and he needs to plan the order in which they should be read. He has narrowed down his choices to 6 novels, 6 plays, 7 poetry books, and 5 nonfiction books.
+
+#### Step 1. If he wants to include no more than 4 nonfiction books, how many different reading schedules are possible? Express your answer in scientific notation rounding to the hundredths place.
+
+```{r}
+
+n <- 6 + 6 + 7 + 5
+
+prob_nf <- dhyper(1, 5, (n-5), 13, (5/n)) + 
+           dhyper(2, 5, (n-5), 13, (5/n)) + 
+           dhyper(3, 5, (n-5), 13, (5/n)) +
+           dhyper(4, 5, (n-5), 13, (5/n))
+
+factorial(n) / (factorial(n-13)) * prob_nf
+
+```
+
+**Solution**: 1.49e+16
+
+
+#### Step 2. If he wants to include all 6 plays, how many different reading schedules are possible? Express your answer in scientific notation rounding to the hundredths place.
+
+```{r}
+
+prob_all_plays <- dhyper(6, 6, (n-6), 13, (6/n))
+
+factorial(n) / (factorial(n-13)) * prob_all_plays
+
+```
+
+**Solution**: 1.98e+14
+
+
+### 8) Zane is planting trees along his driveway, and he has 5 sycamores and 5 cypress trees to plant in one row. What is the probability that he randomly plants the trees so that all 5 sycamores are next to each other and all 5 cypress trees are next to each other? Express your answer as a fraction or a decimal number rounded to four decimal places.
+
+```{r}
+
+2 / (factorial(10) / (factorial(5) * factorial(5)))
+
+```
+
+**Solution**: 0.0079
+
+
+### 9) If you draw a queen or lower from a standard deck of cards, I will pay you $4. If not, you pay me $16. (Aces are considered the highest card in the deck.)
+
+#### Step 1. Find the expected value of the proposition. Round your answer to two decimal places. Losses must be expressed as negative values.
+
+```{r}
+
+(44/52 * 4) - (8/52 * 16)
+
+```
+
+**Solution**: 0.92
+
+
+#### Step 2. If you played this game 833 times how much would you expect to win or lose? Round your answer to two decimal places. Losses must be expressed as negative values.
+
+```{r}
+
+833 * ((44/52 * 4) - (8/52 * 16))
+
+```
+
+**Solution**: 768.92
+
