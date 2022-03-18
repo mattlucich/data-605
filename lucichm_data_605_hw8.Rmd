@@ -1,0 +1,109 @@
+---
+title: "Data 605 HW 8"
+author: "Matthew Lucich"
+date: "3/18/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+### 11) (page 303) A company buys 100 lightbulbs, each of which has an exponential lifetime of 1000 hours. What is the expected time for the first of these bulbs to burn out? (See Exercise 10.)
+
+```{r}
+
+# Simulation method
+min.exponential <- function(n) {
+  all_rand_vars <- c()
+  for (rand_x in c(1:n)) {
+    rand_var <- c()
+    rand_var <- append(rand_var, rexp(100, rate=.001))
+    all_rand_vars <- append(all_rand_vars, min(rand_var))
+  }
+  return(all_rand_vars)
+}
+
+mean(min.exponential(10000))
+
+```
+
+Also, as problem #10 on the same page of the text alludes, the mean of the minimum values of $X_{j}$ is $\mu/n$. In this case, $\mu$ is 1,000 and $n$ is 100, therefore, the mean is $1000/100$, which equals **10 hours**.
+
+
+### 14) (page 303) Assume that X1 and X2 are independent random variables, each having an exponential density with parameter λ. Show that Z = X1 − X2 has density fZ(z)=(1/2)λe−λ|z| 
+
+Per page 293 of Grinstead and Snell’s *Introduction to Probability*, we know the probability density of the sum of two exponentially distributed random variables is:
+
+$f_{Z}(z) = \int_{-\infty}^{+\infty} f_{X}(z-y)f_{Y}(y) \,dy$
+
+We also know the probability density for an exponentially distributed random variable is:
+
+$\lambda e^{-\lambda x}$
+
+Therefore, the joint probability density of of $X_{1}$ and $X_{2}$ is:
+
+$\lambda e^{-\lambda X_{1}} \circledast \lambda e^{-\lambda X_{2}}$
+
+Which simplifies to:
+
+$\lambda^2 e^{-\lambda x_{1} -\lambda x_{2}}$
+
+To get the difference of $X_{1}$ and $X_{2}$, let's define $Z$ as $X_{1} - X_{2}$, then find the joint PDF of $Z$ and $X_{2}$:
+
+$f_{Z}(z) = \int_{-z}^{\infty} \lambda^2 e^{-\lambda z -\lambda 2x_{2}} \,dx_{2}$
+
+Which becomes:
+
+$\frac{1}{2} \lambda e^{\lambda z}$
+
+And for 
+
+$f_{Z}(z) = \int_{0}^{+\infty} \lambda^2 e^{-\lambda z -\lambda 2x_{2}} \,dx_{2}$
+
+Which becomes:
+
+$\frac{1}{2} \lambda e^{-\lambda z}$
+
+Combining them we get:
+
+$f_{Z}(z) = \frac{1}{2} \lambda e^{-\lambda|z|}$
+
+
+
+### 1) (page 320) Let X be a continuous random variable with mean μ = 10 and variance σ2 = 100/3. Using Chebyshev’s Inequality, find an upper bound for the following probabilities. (a) P(|X−10|≥2). (b) P(|X−10|≥5). (c) P(|X−10|≥9). (d) P(|X − 10| ≥ 20).
+
+Per page 316 of Grinstead and Snell’s *Introduction to Probability*, we know:
+
+$P(|X-\mu| \geq k\sigma) \leq \frac{\sigma^2}{k^2\sigma^2} = \frac{1}{k^2}$ 
+
+Therefore, let's calculate k and then plug into $\frac{1}{k^2}$:
+
+```{r}
+
+mu <- 10
+variance <- 100/3
+sd <- sqrt(variance)
+
+# (a) P(|X−10|≥2)
+k <- 2/sd
+1/k^2
+
+
+# (b) P(|X−10|≥5)
+k <- 5/sd
+1/k^2
+
+# (c) P(|X−10|≥9)
+k <- 9/sd
+1/k^2
+
+
+# (d) P(|X − 10| ≥ 20)
+k <- 20/sd
+1/k^2
+
+```
+
+
