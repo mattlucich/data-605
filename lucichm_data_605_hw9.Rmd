@@ -1,0 +1,191 @@
+---
+title: "Data 605 HW9"
+author: "Matthew Lucich"
+date: "3/27/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1) The price of one share of stock in the Pilsdorff Beer Company (see Exer- cise 8.2.12) is given by Yn on the nth day of the year. Finn observes that the differences Xn = Yn+1 − Yn appear to be independent random variables with a common distribution having mean μ = 0 and variance σ2 = 1/4. If Y1 = 100, estimate the probability that Y365 is
+
+
+#### (a) ≥ 100.
+
+```{r}
+mu <- 0
+sd <- sqrt((1/4)*365)
+
+# pnorm method
+pnorm(100-100, mean=mu, sd=sd, lower.tail=FALSE)
+
+```
+
+
+```{r}
+sd_sim <- sqrt(1/4)
+
+# Simulation method
+samples <- c()
+
+for (x in 1:100000) {
+  samples <- append(samples, (100 + sum(rnorm(365, mean=mu, sd=sd_sim))))
+}
+
+length(samples[samples >= 100]) / 100000
+
+```
+
+
+#### (b) ≥ 110.
+
+```{r}
+
+# pnorm method
+pnorm(110-100, mean=mu, sd=sd, lower.tail=FALSE)
+
+```
+
+
+```{r}
+
+# Simulation method
+length(samples[samples >= 110]) / 100000
+
+```
+
+
+#### (c) ≥ 120.
+
+
+```{r}
+
+# pnorm method
+pnorm(120-100, mean=mu, sd=sd, lower.tail=FALSE)
+
+```
+
+
+```{r}
+
+# Simulation method
+length(samples[samples >= 120]) / 100000
+
+```
+
+
+### 2) Calculate the expected value and variance of the binomial distribution using the moment generating function.
+
+Expected value:
+
+Random variable: $X(p,n)$
+
+Moment generating function: $M_{x}(t) = E[e^{tx}]$
+
+$\sum_{i=0}^{n} e^{tx} p(x)$
+
+Where $p(x)$ is probability mass function: $p(x) = {n \choose x} p^x (1-p)^{n-x}$
+
+Which we can rewrite as: $\sum_{i=0}^{n} e^{tx} {n \choose x} p^x (1-p)^{n-x}$
+
+$\sum_{i=0}^{n} {n \choose x} (e^tp)^x (1-p)^{n-x}$
+
+$M_{x}(t) = (e^tp+1-p)^n$
+
+Take first derivative to obtain expected value:
+
+$M'(t) = n(e^tp+1-p)^{n-1}pe^t$ 
+
+Evaluate at zero:
+
+$M'(t) = n(e^0p+1-p)^{n-1}pe^0$ 
+
+**Expected value**: $np$
+
+
+Variance:
+
+Take second derivative:
+
+$M''(t) = n(n-1) (e^tp+1-p)^{n-2}pe^t + n(e^tp+1-p)^{n-1}pe^t$ 
+
+$M''(0) = n(n-1)p^2 + np$
+
+Since variance is $E[X^2] - E[X]^2$:
+
+$n(n-1)p^2+np-n^2p^2$
+
+Simplifies to:
+
+**Variance**: $np(1-p)$
+
+
+### 3) Calculate the expected value and variance of the exponential distribution using the moment generating function.
+
+Exponential distribution:
+
+$f_{x}=\lambda e^{-\lambda x}, x>=0, \lambda > 0$
+
+$M_{t} = E(e^{tx})$
+
+$\int_{0}^\infty e^{tx} \lambda e^{-\lambda x} dx$
+
+$\int_{0}^\infty e^{t-\lambda} x dx$
+
+$\lambda [\frac{\lambda}{t-\lambda} e^{t-\lambda} x]_0^\infty$
+
+$\lambda [0 - \frac{1}{t-\lambda}]$
+
+$M_{x}(t) = \frac{\lambda}{\lambda-t}$
+
+Expected value:
+
+Rewrite MGF as:
+
+$M_{x}(t) = \lambda(\lambda-t)^{-1}$
+
+Take first derivative:
+
+$M_{x}'(t) = -1 \lambda(\lambda-t)^{-2}(-1)$
+
+Evaluate at zero:
+
+$-1 \lambda(\lambda-0)^{-2}(-1)$
+
+**Expected value**: $\frac{1}{\lambda}$
+
+
+Variance:
+
+$M_{x}''(t) = \frac{2\lambda}{(\lambda - t)^3}$
+
+Evaluate at zero:
+
+$M_{x}''(0) = \frac{2\lambda}{(\lambda - 0)^3}$
+
+$M_{x}''(0) = \frac{2}{\lambda^2}$
+
+Since variance is $E[X^2] - E[X]^2$:
+
+$\frac{2}{\lambda^2} - \frac{1}{\lambda^2}$
+
+**Variance**: $\frac{1}{\lambda^2}$
+
+
+
+### References
+
+[Moment generating functions for binomial variables](https://www.youtube.com/watch?v=mpr8ZgI1lIE)
+
+[Moment generating function](https://www.statlect.com/fundamentals-of-probability/moment-generating-function)
+
+[Chapter 5 Moment Generating Functions](https://bookdown.org/probability/beta/moment-generating-functions.html)
+
+[The Moment Generating Function of the Exponential Distribution](https://www.youtube.com/watch?v=ty2vjLxMZkc)
+
+[Obtaining the Expected Value of the Exponential Distribution Using the Moment Generating Function](https://www.youtube.com/watch?v=QUAecbMv0y0)
+
+
+
