@@ -1,0 +1,126 @@
+---
+title: "Data 605 HW 10"
+author: "Matthew Lucich"
+date: "4/2/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(markovchain)
+```
+
+
+### Smith is in jail and has 1 dollar; he can get out on bail if he has 8 dollars. A guard agrees to make a series of bets with him. If Smith bets A dollars, he wins A dollars with probability .4 and loses A dollars with probability .6. Find the probability that he wins 8 dollars before losing all of his money if
+
+
+### (a) he bets 1 dollar each time (timid strategy).
+
+Per the formula found [here](https://www.r-bloggers.com/2013/04/simulating-the-gamblers-ruin/):
+
+```{r}
+
+i <- 1
+N <- 8
+p <- .4
+q <- .6
+
+(1-(q/p)^i) / (1-(q/p)^N)
+
+```
+
+**Solution**: 0.0203
+
+
+#### Simulation approach
+
+```{r}
+
+start_dollars <- 1
+out_on_bail <- c()
+
+for (j in 1:100000) {
+  samples <- c(start_dollars)
+  for (x in 1:100) {
+    samples <- append(samples, sample(c(1,-1), size=1, replace=T, prob=c(.4,.6)))
+    if (sum(samples) >= 8){
+      out_on_bail <- append(out_on_bail, 1)
+      break
+    } else if (sum(samples) <= 0) {
+      break
+    }
+  }
+}  
+
+sum(out_on_bail) / 100000
+
+```
+
+
+### (b) he bets, each time, as much as possible but not more than necessary to bring his fortune up to 8 dollars (bold strategy).
+
+To do this, let's create an absorbing transition matrix. The first row of the transition matrix below indicates that if Smith has zero dollars there is no possibility of exiting this state. The second row indicates if Smith has one dollar there is a .6 probability he will end up with zero in the next state and .4 probability he will end up with two dollars. This logic proceeds accordingly. The reason only states 0, 1, 2, 4, and 8 are include is due to the bold strategy approach. In other words, if Smith is always starting with one dollar and betting his fortune then he will never end up with 3, 5, 6, or 7 dollars.
+
+
+```{r}
+
+m <- matrix(c(1, 0, 0, 0, 0,
+              .6, 0, .4, 0, 0,
+              .6, 0, 0, .4, 0,
+              .6, 0, 0, 0, .4,
+               0, 0, 0, 0, 1), ncol = 5, byrow = TRUE)
+rownames(m)=c("0","1","2","4", "8")
+colnames(m)=c("0","1","2","4","8")
+
+quest_gamb <- new("markovchain", transitionMatrix = m)
+
+initial_state <- c(0,1,0,0,0)
+
+initial_state * (quest_gamb^8)
+
+```
+
+**Solution**: 0.064
+
+
+#### Simulation approach
+
+```{r}
+
+start_dollars <- 1
+out_on_bail <- c()
+
+for (j in 1:100000) {
+  samples <- c(start_dollars)
+  for (x in 1:100) {
+    samples <- append(samples, sample(c(sum(samples),-sum(samples)), size=1, replace=T, prob=c(.4,.6)))
+    if (sum(samples) >= 8){
+      out_on_bail <- append(out_on_bail, 1)
+      break
+    } else if (sum(samples) <= 0) {
+      break
+    }
+  }
+}  
+
+sum(out_on_bail) / 100000
+
+```
+
+
+### (c) Which strategy gives Smith the better chance of getting out of jail?
+
+The bold strategy gives Smith a higher probability of getting out on bail.
+
+
+
+### References
+
+[L26.9 Gambler's Ruin](https://www.youtube.com/watch?v=Ne2lmAZI4-I)
+
+[Simulating the Gambler’s Ruin](https://www.r-bloggers.com/2013/04/simulating-the-gamblers-ruin/)
+
+[Chapter 4: Gambler’s ruin and bold play](https://people.math.umass.edu/~lr7q/ps_files/teaching/math456/Chapter4.pdf)
+
+[Finite Math: Markov Chain Example - The Gambler's Ruin](https://www.youtube.com/watch?v=afIhgiHVnj0)
+
