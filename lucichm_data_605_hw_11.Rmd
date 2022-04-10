@@ -1,0 +1,48 @@
+---
+title: "Data 605 HW 11"
+author: "Matthew Lucich"
+date: "4/10/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Using the “cars” dataset in R, build a linear model for stopping distance as a function of speed and replicate the analysis of your textbook chapter 3 
+
+```{r}
+summary(cars)
+glimpse(cars)
+```
+
+#### Create scatterplot and review if relationship is approximately linear
+
+```{r}
+plot(cars$speed, cars$dist, xlab="Speed", ylab="Stopping Distance", main="Stopping Distance vs Speed")
+```
+
+Relationship looks approximately linear, so we will proceed with fitting a linear regression model.
+
+#### Fitting linear regression model
+
+```{r}
+model <- lm(dist ~ speed, data=cars)
+summary(model)
+```
+
+The summary shows that both intercept and speed are significant at a 95% confidence level. The adjusted R-squared is 0.64 which is moderately high. The F-statistic indicates the model is significant. 
+
+
+```{r}
+plot(model)
+```
+
+Residual vs Fitted plot shows there is no serious heteroskedasticity and since there does not appear to be a trend we can likely conclude the residuals are independent. The Q-Q plot shows while there are potentially some influential outliers, the residuals are approximately normal.
+
+Based on our analysis we can be confident the fitted model meets the assumptions of linear regression.
+
+
+
+
