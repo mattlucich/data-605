@@ -1,0 +1,107 @@
+---
+title: "Data 605 HW 12"
+author: "Matthew Lucich"
+date: "4/13/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+```{r}
+
+df_who <- read.csv("who.csv")
+
+summary(df_who)
+
+glimpse(df_who)
+
+```
+
+
+### Provide a scatterplot of LifeExp~TotExp, and run simple linear regression. Do not transform the variables. Provide and interpret the F statistics, R^2, standard error,and p-values only. Discuss whether the assumptions of simple linear regression met.
+
+
+```{r}
+
+plot(df_who$TotExp, df_who$LifeExp)
+
+m1 <- lm(LifeExp ~ TotExp, data=df_who)
+summary(m1)
+
+```
+
+```{r}
+
+plot(m1)
+
+```
+
+
+**Interpret the F statistics, R^2, standard error,and p-values only.**
+
+F statistic is indicating that the model overall is significant (better than guessing the mean) at a 99% confidence level. Adjusted R-squared is rather low, but I would usually take this as an indicator that the model is worth attempting to improve (ignoring the obviously failed assumptions for the moment), rather than abandoning. The p-values for the intercept, TotExp, and the model overall are all significant at a 99% confidence level.
+
+**Discuss whether the assumptions of simple linear regression met.**
+
+Based on the scatterplot we can see the relationship is not linear. Based on the residual plots we can further conclude the relationship is non-linear and the residuals are non-normal. There may be other assumptions not being met, but we can reject this model before proceeding further.
+
+
+
+### Raise life expectancy to the 4.6 power (i.e., LifeExp^4.6). Raise total expenditures to the 0.06 power (nearly a log transform, TotExp^.06). Plot LifeExp^4.6 as a function of TotExp^.06, and r re-run the simple regression model using the transformed variables. Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is "better?"
+
+```{r}
+
+plot(df_who$TotExp^.06, df_who$LifeExp^4.6)
+
+m2 <- lm(I(LifeExp^4.6) ~ I(TotExp^.06), data=df_who)
+summary(m2)
+
+```
+
+**Provide and interpret the F statistics, R^2, standard error, and p-values. Which model is "better?"**
+
+The F statistic is indicating the model is extremely significant (better than guessing the mean). Adjusted R-squared is substantially better than the previous model and overall .728 is interpreted as large (Cohen 1988). This model is significantly better.
+
+
+
+
+### Using the results from 3, forecast life expectancy when TotExp^.06 =1.5. Then forecast life expectancy when TotExp^.06=2.5.
+
+```{r}
+
+(-736527910 + 620060216 * 1.5)^(1/4.6)
+
+(-736527910 + 620060216 * 2.5)^(1/4.6)
+
+```
+
+
+### Build the following multiple regression model and interpret the F Statistics, R^2, standard error, and p-values. How good is the model? LifeExp = b0+b1 x PropMd + b2 x TotExp +b3 x PropMD x TotExp
+
+```{r}
+
+m3 <- lm(LifeExp ~ PropMD + TotExp + PropMD*TotExp, data=df_who)
+summary(m3)
+
+```
+
+**Interpret the F Statistics, R^2, standard error, and p-values. How good is the model?**
+
+The F statistic is indicating the model is very significant (better than guessing the mean). Adjusted R-squared is improved over the first model, but a step back from the second model and overall 0.347 is interpreted as moderate (Cohen 1988). This model is better than the first and worse than the second.
+
+
+
+### Forecast LifeExp when PropMD=.03 and TotExp = 14. Does this forecast seem realistic? Why or why not?
+
+```{r}
+
+new <- data.frame(PropMD = c(0.3), TotExp = c(14))
+predict(m3, new)
+
+```
+
+This does not seem realistic as human life expectancy is far below 512 and is not expected to approach that in the near future despite the number of MDs and government expenditures. This is another reminder that models should avoid extrapolation when possible and if it is necessary do not exceed significantly beyond the data values you do have.
