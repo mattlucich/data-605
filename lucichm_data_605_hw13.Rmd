@@ -1,0 +1,147 @@
+---
+title: "Data 605 HW 13"
+author: "Matthew Lucich"
+date: "4/16/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### 1) Use integration by substitution to solve the integral below.
+
+$\int 4 e^{-7x}dx$
+
+Move constant
+
+$4 \int e^{-7x}dx$
+
+Use u-substitution
+
+$u = -7x$
+
+Solve for dx
+
+$\frac{du}{dx} = -7$
+
+$dx = -\frac{1}{7}du$
+
+Replace dx
+
+$4 \int -\frac{1}{7} e^{u}du$
+
+Substitute u back in and add constant
+
+$-\frac{4}{7}e^{-7x}+C$
+
+
+### 2) Biologists are treating a pond contaminated with bacteria...
+
+$\frac{dN}{dt} = \frac{3150}{t^4} - 220$
+
+$\int \frac{3150}{t^4} - 220 dt$
+
+$N' = 3150 \frac{t^{-3}}{-3} -220t + c$
+
+Set equal to 6530 and substitute 1
+
+$6530 = -1050  (1^{-3}) -220(1) + c$
+
+$6530 = -1270 + c$
+
+$7800 = c$
+
+Therefore, the function is:
+
+$\frac{-1050}{t^3} -220t + 7800$
+
+
+
+### 3) Find the total area of the red rectangles in the figure below, where the equation of the line is f ( x ) = 2x  9.
+
+
+```{r}
+
+func <- function(x) {2*x-9}
+integrate(func, lower = 4.5, upper = 8.5)
+
+```
+
+
+
+### 4) Find the area of the region bounded by the graphs of the given equations.
+
+Set equations equal to each other and solve for x:
+
+$x^2-2x-2=x+2$
+
+$x^2-3x-4$
+
+$(x+1)(x-4)$
+
+Therefore, we integrate -1 to 4, the difference of the equations
+
+```{r}
+
+func <- function(x) {x+2 - (x^2-2*x-2)}
+integrate(func, lower = -1, upper = 4)
+
+```
+
+
+### 5) A beauty supply store expects to sell 110 flat irons during the next year. It costs $3.75 to store one flat iron for one year. There is a fixed cost of $8.25 for each order. Find the lot size and the number of orders per year that will minimize inventory costs.
+
+**Holding cost**
+
+$H(x) = (holding-cost-per-unit) * \frac{x}{2}$
+
+$3.75  * (x/2)$
+
+$1.875x$
+
+**Reorder cost**
+
+$R(x) = (cost-per-order) * \frac{total-units}{x}$
+
+$8.25 * (110/x)$
+
+$\frac{907.5}{x}$
+
+**Total inventory cost**
+
+$C(x) = H(x) + R(x)$
+
+$1.875x + \frac{907.5}{x}$
+
+
+Find first derivative of total inventory cost function:
+
+```{r}
+
+f=expression(1.875*x + (907.5/x))
+D(f,'x')
+
+```
+
+Set equal to zero and solve for x:
+
+$0 = 1.875 + \frac{907.5}{x^2}$
+
+$x^2 = 484$
+
+$x\pm22$
+
+Therefore, since -22 is not in our range, the lot size that will minimize costs is:
+
+**Lot size: 22**
+
+Which means the number of orders that minimizes costs is:
+
+**Orders: 5** (110/22)
+
+
+
+### References
+
+[Minimizing Inventory Costs](https://www.youtube.com/watch?v=EbNQZqsQyz0)
