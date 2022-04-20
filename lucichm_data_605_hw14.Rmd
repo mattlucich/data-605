@@ -1,0 +1,197 @@
+---
+title: "Data 605 HW 14"
+author: "Matthew Lucich"
+date: "4/19/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Deriv)
+```
+
+## This week, we’ll work out some Taylor Series expansions of popular functions.
+
+
+### $f(x) = \frac{1}{(1-x)}$
+
+```{r}
+
+f=expression(1/(1-x))
+
+# First derivative
+derv_1 <- D(f,'x')
+Simplify(derv_1)
+derv_1_func <- function(x) {1/(1 - x)^2}
+# Evaluate at zero
+derv_1_func(0)
+
+# Second derivative
+derv_2 <- D(D(f,'x'),'x')
+Simplify(derv_2)
+derv_2_func <- function(x) {2/(1 - x)^3}
+# Evaluate at zero
+derv_2_func(0)
+
+# Third derivative
+derv_3 <- D(D(D(f,'x'),'x'),'x')
+Simplify(derv_3)
+derv_3_func <- function(x) {6/(1 - x)^4}
+# Evaluate at zero
+derv_3_func(0)
+
+# Fourth derivative
+derv_4 <- D(D(D(D(f,'x'),'x'),'x'),'x')
+Simplify(derv_4)
+derv_4_func <- function(x) {24/(1 - x)^5}
+# Evaluate at zero
+derv_4_func(0)
+
+# Fifth derivative
+derv_5 <- D(D(D(D(D(f,'x'),'x'),'x'),'x'),'x')
+Simplify(derv_5)
+derv_5_func <- function(x) {120/(1 - x)^6}
+# Evaluate at zero
+derv_5_func(0)
+
+```
+
+We observe that the denominator, n!, yields the same result as the numerator:
+
+```{r}
+
+factorial(1)
+factorial(2)
+factorial(3)
+factorial(4)
+factorial(5)
+
+```
+
+Therefore, the Taylor Series simplifies to:
+
+$X^n$
+
+
+
+### $f(x) = e^x$
+
+```{r}
+
+f=expression(e^x)
+
+# First derivative
+derv_1 <- D(f,'x')
+Simplify(derv_1)
+derv_1_func <- function(x) {exp(x)* log(exp(1))}
+# Evaluate at zero
+derv_1_func(0)
+
+# Second derivative
+derv_2 <- D(D(f,'x'),'x')
+Simplify(derv_2)
+derv_2_func <- function(x) {exp(x) * log(exp(1))^2}
+# Evaluate at zero
+derv_2_func(0)
+
+# Third derivative
+derv_3 <- D(D(D(f,'x'),'x'),'x')
+Simplify(derv_3)
+derv_3_func <- function(x) {exp(x) * log(exp(1))^3}
+# Evaluate at zero
+derv_3_func(0)
+
+# Fourth derivative
+derv_4 <- D(D(D(D(f,'x'),'x'),'x'),'x')
+Simplify(derv_4)
+derv_4_func <- function(x) {exp(x) * log(exp(1))^4}
+# Evaluate at zero
+derv_4_func(0)
+
+# Fifth derivative
+derv_5 <- D(D(D(D(D(f,'x'),'x'),'x'),'x'),'x')
+Simplify(derv_5)
+derv_5_func <- function(x) {exp(x) * log(exp(1))^5}
+# Evaluate at zero
+derv_5_func(0)
+
+```
+
+Therefore, we see a polynomial approximation is:
+
+```{r}
+
+sum((1/factorial(1)) + (1/factorial(2)) + (1/factorial(3)) + (1/factorial(4)) + (1/factorial(5)))
+
+```
+
+More formally, the Taylor Series can be represented as:
+
+$\sum_{n=0}^{\infty} \frac{x^n}{n!}$
+
+
+
+### $f(x) = ln(1+x)$
+
+
+```{r}
+
+f=expression(log(1+x))
+
+# First derivative
+derv_1 <- D(f,'x')
+Simplify(derv_1)
+derv_1_func <- function(x) {1/(1 + x)}
+# Evaluate at zero
+derv_1_func(0)
+
+# Second derivative
+derv_2 <- D(D(f,'x'),'x')
+Simplify(derv_2)
+derv_2_func <- function(x) {-(1/(1 + x)^2)}
+# Evaluate at zero
+derv_2_func(0)
+
+# Third derivative
+derv_3 <- D(D(D(f,'x'),'x'),'x')
+Simplify(derv_3)
+derv_3_func <- function(x) {2/(1 + x)^3}
+# Evaluate at zero
+derv_3_func(0)
+
+# Fourth derivative
+derv_4 <- D(D(D(D(f,'x'),'x'),'x'),'x')
+Simplify(derv_4)
+derv_4_func <- function(x) {-(6/(1 + x)^4)}
+# Evaluate at zero
+derv_4_func(0)
+
+# Fifth derivative
+derv_5 <- D(D(D(D(D(f,'x'),'x'),'x'),'x'),'x')
+Simplify(derv_5)
+derv_5_func <- function(x) {24/(1 + x)^5}
+# Evaluate at zero
+derv_5_func(0)
+
+```
+
+
+Therefore, we see a polynomial approximation is:
+
+```{r}
+
+sum((1/factorial(1)) + (-1/factorial(2)) + (2/factorial(3)) + (-6/factorial(4)) + (24/factorial(5)))
+
+```
+
+The approximation can also be written as:
+
+$0 + \frac{1}{1!}x - \frac{1}{2!}x^2 + \frac{2}{3!}x^3 - \frac{6}{4!}x^3$
+
+
+More formally, the Taylor Series can be represented as:
+
+$\sum_{n=1}^{\infty} -1^{n+1} \frac{x^n}{n}$
+
+
+
