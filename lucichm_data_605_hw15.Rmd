@@ -1,0 +1,291 @@
+---
+title: "Data 605 HW 15"
+author: "Matthew Lucich"
+date: "4/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(Deriv)
+library(Ryacas)
+```
+
+### 1) Find the equation of the regression line for the given points. Round any final values to the nearest hundredth, if necessary.
+
+```{r}
+
+independent <- c(5.6, 6.3, 7, 7.7, 8.4)
+dependent <- c(8.8, 12.4, 14.8, 18.2, 20.8)
+
+model <- lm(dependent ~ independent)
+summary(model)
+
+```
+
+**Solution**:
+
+$y=-14.80 + 4.26x$
+
+
+### 2) Find all local maxima, local minima, and saddle points for the function given below. Write your answer(s) in the form (x, y, z). Separate multiple points with a comma.
+
+$f(x,y) = 24x - 6xy^2 - 8y^3$
+
+```{r}
+
+f=expression(24*x - 6*x*y^2 - 8*y^3)
+
+fx <- D(f,'x')
+Simplify(fx)
+
+fy <- D(f,'y')
+Simplify(fy)
+
+```
+
+Solve for y
+
+$0 = 24 - 6y^2$
+
+$6y^2 = 24$
+
+$6y^2 = 24$
+
+$y^2 = 4$
+
+$y \pm 2$
+
+
+
+Solve for x
+
+$0 = -12y (x+2y)$
+
+$0 = -12yx -24y^2$
+
+$12yx  = -24y^2$
+
+$x = \frac{-24y^2}{12y}$
+
+$x = -2y$
+
+$x = -2(\pm2)$
+
+$x \pm 4$
+
+
+```{r}
+
+
+fxx <- D(D(f,'x'),'x')
+Simplify(fxx)
+
+fxy <- D(D(f,'x'),'y')
+Simplify(fxy)
+
+fyy <- D(D(f,'y'),'y')
+Simplify(fyy)
+
+```
+
+$0 * -12(x+4y) - (-12y)^2$
+
+$-144y^2$
+
+Evaluated at with 2 and -2 (x is ignored due to no term) the result is: -576.
+
+Since, -576 is less than zero, (-4, 2) and (4, -2) are saddle points.
+
+There is no local maxima or local minima.
+
+
+### 3) A grocery store sells two brands of a product, the "house" brand and a "name" brand. The manager estimates that if she sells the "house" brand for x dollars and the "name" brand for y dollars, she will be able to sell 81  21x + 17y units of the "house" brand and 40 + 11x  23y units of the "name" brand.
+
+Step 1. Find the revenue function R ( x, y ).
+
+```{r}
+
+house <- expression(81-21*x+17*y)
+name <- expression(40 + 11*x - 23*y)
+
+house_and_name <- expression(x*(81-21*x+17*y) + y*(40 + 11*x - 23*y))
+
+Simplify(house_and_name)
+
+```
+
+Expanding out...
+$17xy + 81x - 21x^2 + 11xy + 40y - 23y^2$
+
+Revenue function is:
+$28xy + 81x - 21x^2 + 40y - 23y^2$
+
+
+Step 2. What is the revenue if she sells the "house" brand for $2.30 and the "name" brand for $4.10?
+
+```{r}
+
+x <- 2.3
+y <- 4.1
+
+x*(81 - 21*x + 17*y) + y*(40 + 11*x - 23*y)
+
+```
+
+
+
+### 4) A company has a plant in Los Angeles and a plant in Denver. The firm is committed to produce a total of 96 units of a product each week. The total weekly cost is given by C(x, y) = 1/6 x2 + 1/6 y2 + 7x + 25y + 700, where x is the number of units produced in Los Angeles and y is the number of units produced in Denver. How many units should be produced in each plant to minimize the total weekly cost?
+
+Cost function is: 
+
+$\frac{1}{6} x^2 + \frac{1}{6} y^2 + 7x + 25y + 700$
+
+Required output per week can be defined as:
+$x + y = 96$
+
+Which we can rewrite as:
+$x = 96 - y$
+
+Let's substitute the expression above for x:
+
+$\frac{1}{6} (96 - y)^2 + \frac{1}{6} y^2 + 7(96 - y) + 25y + 700$
+
+Which simplifies to:
+
+$1536 - 32y + \frac{1}{6}y^2 + \frac{1}{6} y^2 + 672 - 7y + 25y + 700$
+
+$2908 - \frac{1}{3}y^2 - 14y$
+
+
+Let's take the first derivative to find minimum cost...
+
+```{r}
+
+f <- expression(2908 - (1/3)*y^2-14*y)
+fx <- D(f,'y')
+Simplify(fx)
+
+```
+
+$0 = -\frac{2}{3}y - 14$
+
+Solve for y:
+
+$y = 21$
+
+Therefore, if 21 units should be produced in Denver..
+
+$x + 21 = 96$
+
+Then, the amount of units produced in Los Angeles should be:
+
+$x = 75$
+
+
+
+### 5) Evaluate the double integral on the given region. Write your answer in exact form without decimals.
+
+$\int_{2}^{4} \int_{2}^{4} e^{8x+3y} \,dx dy$
+
+Apply u-substitution
+
+u = $8x+3y$
+
+Take derivative with respect to x:
+
+$8+0$
+
+$\frac{du}{dx} = 8+0$
+
+$dx = \frac{1}{8}du$
+
+Now plug in 2 and 4 to u for adjusted boundaries:
+
+$8(2) + 3y = 16 + 3y$
+
+$8(4) + 3y = 32 + 3y$
+
+The updated double integral becomes:
+
+$\int_{16 + 3y}^{32 + 3y} e^u \frac{1}{8} \,du$
+
+Move the constant to the front:
+
+$\frac{1}{8} \int_{16 + 3y}^{32 + 3y} e^u \,du$
+
+
+$\frac{1}{8} (e^{32 + 3y} - e^{16 + 3y}) \,du$
+
+
+$\int_{2}^{4} \frac{1}{8} (e^{32 + 3y} - e^{16 + 3y}) \,dy$
+
+Apply sum rule
+
+$\frac{1}{8} \int_{2}^{4} e^{32 + 3y} - \int_{2}^{4}e^{16 + 3y} \,dy$
+
+
+Apply u-substitution
+
+u = $32 + 3y$
+
+Take derivative with respect to y:
+
+$0+3$
+
+$\frac{du}{dy} = 0+3$
+
+$dy = \frac{1}{3}du$
+
+Now plug in 2 and 4 to u for adjusted boundaries:
+
+$32 + 3(2) = 38$
+
+$32 + 3(4) = 44$
+
+The updated double integral becomes:
+
+$\int_{38}^{44} e^u \frac{1}{3} \,du$
+
+
+$\frac{1}{3} (e^{44} - e^{38})$
+
+
+Apply u-substitution
+
+u = $16 + 3y$
+
+Take derivative with respect to y:
+
+$0+3$
+
+$\frac{du}{dy} = 0+3$
+
+$dy = \frac{1}{3}du$
+
+Now plug in 2 and 4 to u for adjusted boundaries:
+
+$16 + 3(2) = 22$
+
+$16 + 3(4) = 28$
+
+The updated double integral becomes:
+
+$\int_{22}^{28} e^u \frac{1}{3} \,du$
+
+
+$\frac{1}{3} (e^{28} - e^{22})$
+
+
+Now combine:
+
+$(e^{44} - e^{38}) - (e^{28} - e^{22})$
+
+$e^{44} - e^{38} - e^{28} + e^{22}$
+
+
+Insert the constants:
+
+$\frac{1}{8}(\frac{1}{3}(e^{44} - e^{38} - e^{28} + e^{22}))$
+
+
