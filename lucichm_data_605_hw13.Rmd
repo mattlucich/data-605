@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(Deriv)
+library(Ryacas)
 ```
 
 ### 1) Use integration by substitution to solve the integral below.
@@ -140,6 +142,61 @@ Which means the number of orders that minimizes costs is:
 
 **Orders: 5** (110/22)
 
+
+### 6)  Use integration by parts to solve the integral below.
+
+$\int ln(9x) * x^6 dx$
+
+$u = ln(9x)$
+
+```{r}
+
+f=expression(log(9*x))
+derv_1 <- D(f,'x')
+Simplify(derv_1)
+
+```
+
+$u' = \frac{1}{x}$
+
+$v' = x^6$
+
+Integrating we get...
+$v = \frac{x^7}{7}$
+
+Using the integration by parts formula:
+$\int udv = uv - \int vdu$
+
+We get...
+$ln(9x) \frac{x^7}{7} - \int \frac{1}{x} * \frac{x^7}{7} dx$
+
+```{r}
+
+yac_str("Integrate(x) (x^6)/7")
+
+```
+
+Simplified:
+
+$ln(9x) \frac{x^7}{7} - \frac{x^7}{49} + C$
+
+
+### 7) Determine whether f ( x ) is a probability density function on the interval...
+
+Let's check if function:
+
+$f(x) = \frac{1}{6x}$
+
+Integrates to one over the range [1, $e^6$]
+
+```{r}
+
+func <- function(x) {1/(6*x)}
+integrate(func, lower = 1, upper = exp(6))
+
+```
+
+It is a probability density function on the interval!
 
 
 ### References
